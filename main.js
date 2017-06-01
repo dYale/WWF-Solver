@@ -274,7 +274,12 @@ function iterateBoard (){
 
         if(!currentTile["val"]){ //if the tile is empty
           const surroundingTiles = checkInitialSurroundingTiles(i, j);
-          //check if the current tile has a tile with a value in the tile left,right,top,down tile
+          
+          if(surroundingTiles.row.val){
+            if(surroundingTiles.row.nothingPreceding){
+              const initialRowIdx = determineInitialRowWordIdx()
+            }
+          }
 
         }
         //keep track of both right and left are taken or both top and down are taken
@@ -288,27 +293,42 @@ function iterateBoard (){
 }
 
 function checkInitialSurroundingTiles(columnIdx,rowIdx){
-  const surroundingTiles = {horizontal: {val: false, firstLetter: true}, vertical: {val: false, firstLetter: true}};
+  const surroundingTiles = {row: {val: false, nothingPreceding: true}, column: {val: false, nothingPreceding: true}};
 
   if(board[i + 1, j]) {
-    surroundingTiles.vertical.val = true;
+    surroundingTiles.column.val = true;
   }
   if(board[i - 1, j]) {
-    surroundingTiles.vertical.val = true;
-    surroundingTiles.vertical.firstLetter = false;
+    surroundingTiles.column.val = true;
+    surroundingTiles.column.nothingPreceding = false;
   }
   if(board[i, j + 1]) {
-    surroundingTiles.horizontal.val = true;
+    surroundingTiles.row.val = true;
   }
   if(board[i, j - 1]) {
-    surroundingTiles.horizontal.val = true;
-    surroundingTiles.vertical.firstLetter = false;
+    surroundingTiles.row.val = true;
+    surroundingTiles.column.nothingPreceding = false;
   }
 
   return surroundingTiles;
 }
 
 
+function determineInitialColumnWordIdx(rowIdx, columnIdx){
+  for(let k = rowIdx; k >= 0; k--){
+    if(!board[k,columnIdx]){
+      return k + 1;
+    }
+  }
+}
+
+function determineInitialRowWordIdx(rowIdx, columnIdx){
+  for(let k = columnIdx; k >= 0; k--){
+    if(!board[rowIdx,k]){
+      return k + 1;
+    }
+  }
+}
 
 
 
