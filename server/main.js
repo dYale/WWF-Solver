@@ -1,4 +1,7 @@
-const board = [
+//USE ELASTIC SEARCH TO OPTOMIZE
+//mongo DB of entire dictionary
+
+const board = module.exports.defaultBoard = [
   [
       { val: '', bonus: '' },
       { val: '', bonus: '' },
@@ -256,7 +259,7 @@ const board = [
     ]
 ];
 
-let currentTile = [0,0];
+//let currentTile = [0,0];
 
 
 function parseBoard (board, lettersArray){
@@ -267,24 +270,24 @@ function parseBoard (board, lettersArray){
 
 
 function iterateBoard (){
-    for(let i = 0; i < board.length; i++){
-      for(let j = 0; j < board.length; j++){
+    for(var i = 0; i < board.length; i++){
+      for(var j = 0; j < board.length; j++){
         const currentTile = board[i,j];
         const surroundingTiles = {up: false, down: false, left: false, right: false};
 
         if(!currentTile["val"]){ //if the tile is empty
           const surroundingTiles = checkInitialSurroundingTiles(i, j);
-          let initialRowIdx = i;
+          var initialRowIdx = i;
           if(surroundingTiles.row.val){
             if(!surroundingTiles.row.nothingPreceding){
-              let initialRowIdx = determineInitialRowWordIdx(i,j);
+              var {initialIdx, startWithSeven} = determineInitialRowWordIdx(i,j);
             }
-            let initialRowIdx = i - 6 > 0 ? i - 6 : 0;
+            var initialRowIdx = i - 6 > 0 ? i - 6 : 0;
             //run process from that first idx, run through every permutation 7!, index + 1 then 6! etc
             //check validity of word in each location, if valid, iterate again and determine if the words that are being touched on top or bottom are also valid
             //once done all 7!, 6!... etc move entire idx over by 1 and reproduce until that idx matches the original i IDX;
           }
-          let initialColumnIdx = 0;
+          var initialColumnIdx = 0;
           if(surroundingTiles.column.val){
             if(!surroundingTiles.column.nothingPreceding){
               initialColumnIdx = determineInitialColumnWordIdx(i,j);
@@ -326,20 +329,24 @@ function checkInitialSurroundingTiles(columnIdx,rowIdx){
 }
 
 
-function determineInitialColumnWordIdx(rowIdx, columnIdx){
-  for(let k = rowIdx; k >= 0; k--){
+module.exports.determineInitialColumnWordIdx = function determineInitialColumnWordIdx(rowIdx, columnIdx. boardToUse = board){
+  let tilesToCount = 6;
+  for(var k = rowIdx; k >= 0 || tilesToCount === 0; k--){
     if(!board[k,columnIdx]){
-      return k + 1;
+      tilesToCount--;
     }
   }
+  return {initialIdx: k, startWithSeven: tilesToCount === 0}
 }
 
-function determineInitialRowWordIdx(rowIdx, columnIdx){
-  for(let k = columnIdx; k >= 0; k--){
+module.exports.determineInitialRowWordIdx = function determineInitialRowWordIdx(rowIdx, columnIdx){
+  let tilesToCount = 6;
+  for(var k = columnIdx; k >= 0 || tilesToCount === 0; k--){
     if(!board[rowIdx,k]){
-      return k + 1;
+      tilesToCount--;
     }
   }
+  return {initialIdx: k, startWithSeven: tilesToCount === 0}
 }
 
 
